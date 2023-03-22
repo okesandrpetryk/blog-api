@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 
 import { HttpStatus } from '../shared/http-status';
+import { bodyValidationMiddleware } from '../shared/middlewares/validation.middleware';
 import { authService } from './auth.service';
 import { LogInDto, RegisterDto } from './dto/auth.dto';
 
@@ -11,17 +12,19 @@ export class AuthController {
   constructor() {
     this.router = Router();
 
-    this.router.post('/register', this.register);
-    this.router.get('/log-in', this.logIn);
+    this.router.post(
+      '/register',
+      bodyValidationMiddleware(RegisterDto),
+      this.register,
+    );
+    this.router.get('/log-in', bodyValidationMiddleware(LogInDto), this.logIn);
     this.router.get('/log-out', this.logOut);
     this.router.get('/refresh', this.refresh);
   }
 
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = RegisterDto.parse(req.body);
-
-      await authService.register(data);
+      await authService.register(req.body);
 
       res.sendStatus(201);
     } catch (e: any) {
@@ -31,9 +34,7 @@ export class AuthController {
 
   async logIn(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = LogInDto.parse(req.body);
-
-      const { refreshToken, accessToken } = await authService.logIn(data);
+      const { refreshToken, accessToken } = await authService.logIn(req.body);
 
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,

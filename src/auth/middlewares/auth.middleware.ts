@@ -1,11 +1,12 @@
 import type { NextFunction, Response } from 'express';
 
+import { BadRequestException } from '../../shared/exceptions';
 import { HttpStatus } from '../../shared/http-status';
-import { IToken, PreProtectedRequest } from '../interfaces';
+import { IToken, ProtectedRequest } from '../interfaces';
 import { tokensService } from '../tokens.service';
 
 export const authGuard = async (
-  req: PreProtectedRequest,
+  req: ProtectedRequest,
   res: Response,
   next: NextFunction,
 ) => {
@@ -22,7 +23,6 @@ export const authGuard = async (
 
     next();
   } catch (e: unknown) {
-    console.log(e);
     res.sendStatus(HttpStatus.UNAUTHORIZED);
   }
 };

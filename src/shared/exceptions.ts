@@ -11,13 +11,13 @@ export class HttpException extends Error {
 }
 
 export class ValidationException extends HttpException {
-  constructor(readonly responseBody: string | object | []) {
+  constructor(readonly responseBody: string | object | [] = '') {
     super('Validation error', responseBody, HttpStatus.BAD_REQUEST);
   }
 }
 
 export class BadRequestException extends HttpException {
-  constructor(readonly responseBody: string | object | []) {
+  constructor(readonly responseBody: string | object | [] = '') {
     super('Bad request', responseBody, HttpStatus.BAD_REQUEST);
   }
 }
